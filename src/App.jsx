@@ -17,6 +17,18 @@ import {
 } from 'lucide-react';
 
 // --- DATOS INICIALES ---
+// Plantilla de las acciones de análisis. Se inyectará en cada gramaje si hay fenómeno.
+const getAnalysisTasks = (parentId) => [
+  { id: `${parentId}-a1`, text: "Cambio de transmisor EH (Maq. Parada)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a2`, text: "Cambio de reparto de cargas / Humectar el fieltro", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a3`, text: "Inspección Encoders (Formador, Fieltro, Succión, F.P.)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a4`, text: "Inspección de los Difusores de la Caja de Entrada", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a5`, text: "Abrir para Inspeccionar la Bomba 2 (Válvula)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a6`, text: "Sellar fuga de pasta en F.P. (Soldadura en frío)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a7`, text: "Validar GAP cabecero / Formador y Yankee / Prensa", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
+  { id: `${parentId}-a8`, text: "Validar diámetros Rodillo Accionador", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" }
+];
+
 const initialTasks = [
   {
     id: 1,
@@ -44,50 +56,33 @@ const initialTasks = [
       { 
         id: "2-1", type: "branching", text: "14.5g -> PASAR A 16.5 g/m²", 
         phenomenon: null, phenomenonText: "Análisis (Condición Prensa / Yankee)", noPhenomenonText: "Pasar al siguiente gramaje (16.5g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" 
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-1")
       },
       { 
         id: "2-2", type: "branching", text: "16.5g -> PASAR A 18.5 g/m²", 
         phenomenon: null, phenomenonText: "Análisis", noPhenomenonText: "Pasar al siguiente gramaje (20g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" 
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-2")
       },
       { 
         id: "2-3", type: "branching", text: "18.5g -> PASAR A 20 g/m²", 
         phenomenon: null, phenomenonText: "Análisis", noPhenomenonText: "Pasar al siguiente gramaje (26g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" 
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-3")
       },
       { 
         id: "2-4", type: "branching", text: "20g -> PASAR A 26 g/m²", 
         phenomenon: null, phenomenonText: "Análisis (ACR) -> ACCIÓN INMEDIATA (Poner en funcionamiento Caja Pickup)", noPhenomenonText: "PARADA DE EMERGENCIA (*Antes de parar: Cambiar Yankee DCS - Inspección)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" 
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-4")
       }
     ]
   },
   {
     id: 3,
-    title: "Toma de datos / Tendencias & Análisis",
-    status: "Pendiente",
-    observations: "",
-    photo: null,
-    checklist: [
-      { id: "3-1", type: "standard", text: "Cambio de transmisor EH (Maq. Parada)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-2", type: "standard", text: "Cambio de reparto de cargas / Humectar el fieltro", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-3", type: "standard", text: "Inspección Encoders (Formador, Fieltro, Succión, F.P.)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-4", type: "standard", text: "Inspección de los Difusores de la Caja de Entrada", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-5", type: "standard", text: "Abrir para Inspeccionar la Bomba 2 (Válvula)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-6", type: "standard", text: "Sellar fuga de pasta en F.P. (Soldadura en frío)", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-7", type: "standard", text: "Validar GAP cabecero / Formador y Yankee / Prensa", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" },
-      { id: "3-8", type: "standard", text: "Validar diámetros Rodillo Accionador", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" }
-    ]
-  },
-  {
-    id: 4,
     title: "En el Arranque",
     status: "Pendiente",
     observations: "",
     photo: null,
     checklist: [
-      { id: "4-1", type: "standard", text: "Subir Vel. en Arranque para ver sincronismo", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" }
+      { id: "3-1", type: "standard", text: "Subir Vel. en Arranque para ver sincronismo", isCompleted: false, observation: "", photo: null, startTime: "", endTime: "" }
     ]
   }
 ];
@@ -148,8 +143,17 @@ export default function App() {
         const updatedChecklist = t.checklist.map(c => 
           c.id === checklistId ? { ...c, isCompleted: !c.isCompleted } : c
         );
-        const allCompleted = updatedChecklist.every(c => c.isCompleted);
-        const someCompleted = updatedChecklist.some(c => c.isCompleted);
+        
+        // Verifica completitud incluyendo las tareas anidadas si hubo fenómeno
+        const allCompleted = updatedChecklist.every(c => {
+          if (c.type === 'branching' && c.phenomenon === true && c.analysisTasks) {
+             return c.isCompleted && c.analysisTasks.every(a => a.isCompleted);
+          }
+          return c.isCompleted;
+        });
+        const someCompleted = updatedChecklist.some(c => c.isCompleted) || 
+                              updatedChecklist.some(c => c.analysisTasks && c.analysisTasks.some(a => a.isCompleted));
+        
         let newStatus = t.status;
         if (allCompleted) newStatus = "Completado";
         else if (someCompleted) newStatus = "En Proceso";
@@ -178,6 +182,67 @@ export default function App() {
     }
   };
 
+  // --- FUNCIONES PARA ANÁLISIS ANIDADOS (DESPLIEGUE POR FENÓMENO) ---
+  const updateAnalysisTask = (taskId, checklistId, analysisId, field, value) => {
+    setTasks(tasks.map(t => {
+      if (t.id === taskId) {
+        const updatedChecklist = t.checklist.map(c => {
+          if (c.id === checklistId && c.analysisTasks) {
+            const updatedAnalysis = c.analysisTasks.map(a =>
+              a.id === analysisId ? { ...a, [field]: value } : a
+            );
+            return { ...c, analysisTasks: updatedAnalysis };
+          }
+          return c;
+        });
+        return { ...t, checklist: updatedChecklist };
+      }
+      return t;
+    }));
+  };
+
+  const toggleAnalysisTask = (taskId, checklistId, analysisId) => {
+    setTasks(tasks.map(t => {
+      if (t.id === taskId) {
+        const updatedChecklist = t.checklist.map(c => {
+          if (c.id === checklistId && c.analysisTasks) {
+            const updatedAnalysis = c.analysisTasks.map(a =>
+              a.id === analysisId ? { ...a, isCompleted: !a.isCompleted } : a
+            );
+            return { ...c, analysisTasks: updatedAnalysis };
+          }
+          return c;
+        });
+        
+        const allCompleted = updatedChecklist.every(c => {
+          if (c.type === 'branching' && c.phenomenon === true && c.analysisTasks) {
+             return c.isCompleted && c.analysisTasks.every(a => a.isCompleted);
+          }
+          return c.isCompleted;
+        });
+        const someCompleted = updatedChecklist.some(c => c.isCompleted) || 
+                              updatedChecklist.some(c => c.analysisTasks && c.analysisTasks.some(a => a.isCompleted));
+        
+        let newStatus = t.status;
+        if (allCompleted) newStatus = "Completado";
+        else if (someCompleted) newStatus = "En Proceso";
+        else newStatus = "Pendiente";
+
+        return { ...t, checklist: updatedChecklist, status: newStatus };
+      }
+      return t;
+    }));
+  };
+
+  const handleAnalysisPhotoUpload = (taskId, checklistId, analysisId, event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => updateAnalysisTask(taskId, checklistId, analysisId, 'photo', reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
   // --- CÁLCULOS GANTT ---
   const { ganttItems, minTime, totalDuration } = useMemo(() => {
     let items = [];
@@ -194,6 +259,20 @@ export default function App() {
             if (s < minT) minT = s;
             if (e > maxT) maxT = e;
           }
+        }
+        // Anidado de Análisis: Añadir estas tareas al Gantt si hubo fenómeno
+        if (c.type === 'branching' && c.phenomenon === true && c.analysisTasks) {
+          c.analysisTasks.forEach(a => {
+            if (a.startTime && a.endTime) {
+              const s = new Date(a.startTime).getTime();
+              const e = new Date(a.endTime).getTime();
+              if (s < e) {
+                items.push({ taskTitle: `Análisis (${c.text})`, stepText: a.text, start: s, end: e, isCompleted: a.isCompleted, phenomenon: null });
+                if (s < minT) minT = s;
+                if (e > maxT) maxT = e;
+              }
+            }
+          });
         }
       });
     });
@@ -215,8 +294,22 @@ export default function App() {
 
   const getTaskProgress = (checklist) => {
     if (!checklist || checklist.length === 0) return 0;
-    const completed = checklist.filter(c => c.isCompleted).length;
-    return Math.round((completed / checklist.length) * 100);
+    let total = 0;
+    let completed = 0;
+    
+    checklist.forEach(c => {
+      total++;
+      if (c.isCompleted) completed++;
+      // Suma al total los pasos de análisis sólo si el fenómeno ocurrió
+      if (c.type === 'branching' && c.phenomenon === true && c.analysisTasks) {
+        c.analysisTasks.forEach(a => {
+          total++;
+          if (a.isCompleted) completed++;
+        });
+      }
+    });
+    
+    return Math.round((completed / total) * 100);
   };
 
   const formatDateLabel = (timestamp) => {
@@ -407,6 +500,99 @@ export default function App() {
                                 >
                                   Deshacer selección de fenómeno
                                 </button>
+                              </div>
+                            )}
+
+                            {/* DESPLIEGUE CONDICIONAL DE TENDENCIAS/ANÁLISIS */}
+                            {item.phenomenon === true && item.analysisTasks && (
+                              <div className="mt-6 border-t-2 border-red-200 pt-6 animate-fade-in bg-red-50/50 -mx-4 px-4 pb-4 rounded-b-xl shadow-inner">
+                                <h5 className="text-red-800 font-extrabold mb-4 flex items-center gap-2">
+                                   <AlertTriangle size={18} /> Protocolo de Análisis Requerido (Desplegado por Fenómeno)
+                                </h5>
+                                <div className="space-y-4">
+                                  {item.analysisTasks.map((analysis) => (
+                                    <div key={analysis.id} className={`p-4 rounded-xl border transition-all shadow-sm ${analysis.isCompleted ? 'bg-green-50 border-green-200' : 'bg-white border-red-200 hover:border-red-300'}`}>
+                                      
+                                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+                                        <h6 className={`text-sm font-bold ${analysis.isCompleted ? 'text-green-700 line-through opacity-70' : 'text-slate-800'}`}>
+                                          {analysis.text}
+                                        </h6>
+                                        <button 
+                                          onClick={() => toggleAnalysisTask(task.id, item.id, analysis.id)}
+                                          className={`flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-bold text-xs transition-all shadow-sm ${
+                                            analysis.isCompleted 
+                                            ? 'bg-green-600 text-white hover:bg-green-700' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700 border border-slate-300'
+                                          }`}
+                                        >
+                                          {analysis.isCompleted ? <CheckCircle2 size={16} /> : <CheckSquare size={16} />}
+                                          {analysis.isCompleted ? 'Análisis Validado' : 'Validar Análisis'}
+                                        </button>
+                                      </div>
+
+                                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                                        {/* Tiempos de Análisis */}
+                                        <div className="lg:col-span-3">
+                                            <div className="space-y-2">
+                                              <div>
+                                                <span className="text-[9px] font-bold text-slate-400 uppercase">Inicio</span>
+                                                <input 
+                                                  type="datetime-local" value={analysis.startTime}
+                                                  onChange={(e) => updateAnalysisTask(task.id, item.id, analysis.id, 'startTime', e.target.value)}
+                                                  className="w-full mt-1 p-1.5 text-xs border border-slate-300 rounded outline-none"
+                                                />
+                                              </div>
+                                              <div>
+                                                <span className="text-[9px] font-bold text-slate-400 uppercase">Fin</span>
+                                                <input 
+                                                  type="datetime-local" value={analysis.endTime}
+                                                  onChange={(e) => updateAnalysisTask(task.id, item.id, analysis.id, 'endTime', e.target.value)}
+                                                  className="w-full mt-1 p-1.5 text-xs border border-slate-300 rounded outline-none"
+                                                />
+                                              </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Observaciones de Análisis */}
+                                        <div className="lg:col-span-6 flex flex-col">
+                                          <span className="text-[9px] font-bold text-slate-400 uppercase mb-1">Observaciones / Medidas</span>
+                                          <textarea
+                                            value={analysis.observation || ""}
+                                            onChange={(e) => updateAnalysisTask(task.id, item.id, analysis.id, 'observation', e.target.value)}
+                                            placeholder="Anota datos del transmisor, presiones, gaps, etc..."
+                                            className="w-full flex-grow p-2 border border-slate-300 rounded text-xs outline-none resize-none"
+                                          ></textarea>
+                                        </div>
+
+                                        {/* Foto de Análisis */}
+                                        <div className="lg:col-span-3 flex flex-col">
+                                          <span className="text-[9px] font-bold text-slate-400 uppercase mb-1">Evidencia</span>
+                                          {analysis.photo ? (
+                                            <div className="relative group w-full h-[60px] bg-black rounded overflow-hidden">
+                                              <img src={analysis.photo} alt={`Evidencia`} className="absolute inset-0 w-full h-full object-cover opacity-90" />
+                                              <button 
+                                                onClick={() => updateAnalysisTask(task.id, item.id, analysis.id, 'photo', null)}
+                                                className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                              >
+                                                <Trash2 size={12} />
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div className="w-full h-[60px] border border-dashed border-slate-300 rounded flex flex-col items-center justify-center text-slate-400 bg-slate-50 hover:bg-red-50 cursor-pointer relative">
+                                              <input 
+                                                type="file" accept="image/*" 
+                                                onChange={(e) => handleAnalysisPhotoUpload(task.id, item.id, analysis.id, e)}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                              />
+                                              <span className="text-[9px] font-bold text-center">Subir Foto</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </div>
