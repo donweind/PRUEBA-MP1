@@ -56,22 +56,26 @@ const initialTasks = [
       { 
         id: "2-1", type: "branching", text: "14.5g -> PASAR A 16.5 g/m²", 
         phenomenon: null, phenomenonText: "Análisis (Condición Prensa / Yankee)", noPhenomenonText: "Pasar al siguiente gramaje (16.5g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-1")
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-1"),
+        velocidad: "", condicionPrensa: "", presionYankee: ""
       },
       { 
         id: "2-2", type: "branching", text: "16.5g -> PASAR A 18.5 g/m²", 
         phenomenon: null, phenomenonText: "Análisis", noPhenomenonText: "Pasar al siguiente gramaje (20g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-2")
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-2"),
+        velocidad: "", condicionPrensa: "", presionYankee: ""
       },
       { 
         id: "2-3", type: "branching", text: "18.5g -> PASAR A 20 g/m²", 
         phenomenon: null, phenomenonText: "Análisis", noPhenomenonText: "Pasar al siguiente gramaje (26g)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-3")
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-3"),
+        velocidad: "", condicionPrensa: "", presionYankee: ""
       },
       { 
         id: "2-4", type: "branching", text: "20g -> PASAR A 26 g/m²", 
         phenomenon: null, phenomenonText: "Análisis (ACR) -> ACCIÓN INMEDIATA (Poner en funcionamiento Caja Pickup)", noPhenomenonText: "PARADA DE EMERGENCIA (*Antes de parar: Cambiar Yankee DCS - Inspección)", 
-        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-4")
+        isCompleted: false, observation: "", photo: null, startTime: "", endTime: "", analysisTasks: getAnalysisTasks("2-4"),
+        velocidad: "", condicionPrensa: "", presionYankee: ""
       }
     ]
   },
@@ -90,6 +94,7 @@ const initialTasks = [
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [tasks, setTasks] = useState(initialTasks);
+  const [downloadVersion, setDownloadVersion] = useState(1);
   const fileInputRef = useRef(null);
 
   // --- MANEJO DE JSON ---
@@ -97,10 +102,13 @@ export default function App() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tasks, null, 2));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "Prueba MP1.json");
+    downloadAnchorNode.setAttribute("download", `Prueba MP1 V${downloadVersion}.json`);
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+    
+    // Incrementa la versión para la próxima descarga
+    setDownloadVersion(prevVersion => prevVersion + 1);
   };
 
   const handleUploadJSON = (event) => {
@@ -440,6 +448,42 @@ export default function App() {
                             {item.isCompleted ? 'Paso Validado' : 'Validar Paso'}
                           </button>
                         </div>
+
+                        {/* Fila de Parámetros Específicos para Bloque 2 */}
+                        {task.id === 2 && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-inner">
+                            <div>
+                              <span className="text-[10px] font-bold text-blue-800 uppercase flex items-center gap-1">Velocidad (mpm)</span>
+                              <input 
+                                type="number" 
+                                value={item.velocidad || ""}
+                                onChange={(e) => updateChecklistItem(task.id, item.id, 'velocidad', e.target.value)}
+                                className="w-full mt-1 p-2 text-sm border border-blue-200 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                placeholder="Ej: 1650"
+                              />
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-bold text-blue-800 uppercase flex items-center gap-1">Condición Prensa (kN/m)</span>
+                              <input 
+                                type="number" 
+                                value={item.condicionPrensa || ""}
+                                onChange={(e) => updateChecklistItem(task.id, item.id, 'condicionPrensa', e.target.value)}
+                                className="w-full mt-1 p-2 text-sm border border-blue-200 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                placeholder="Ej: 80"
+                              />
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-bold text-blue-800 uppercase flex items-center gap-1">Presión Yankee (bar)</span>
+                              <input 
+                                type="number" step="0.1"
+                                value={item.presionYankee || ""}
+                                onChange={(e) => updateChecklistItem(task.id, item.id, 'presionYankee', e.target.value)}
+                                className="w-full mt-1 p-2 text-sm border border-blue-200 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                placeholder="Ej: 6.5"
+                              />
+                            </div>
+                          </div>
+                        )}
 
                         {/* Fila 2 (BIFURCACIÓN): Lógica especial para el PASO 2 */}
                         {item.type === 'branching' && (
